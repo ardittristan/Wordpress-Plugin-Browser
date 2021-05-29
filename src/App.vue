@@ -26,7 +26,19 @@
 
     <v-main>
       <v-container>
-
+        <v-row>
+          <v-col
+            v-for="plugin in plugins"
+            :key="plugin.slug"
+            cols="12"
+            xl="4"
+            lg="6"
+            md="6"
+            sm="12"
+          >
+            <plugin :plugin="plugin" />
+          </v-col>
+        </v-row>
       </v-container>
     </v-main>
 
@@ -40,17 +52,21 @@
   import { Unquery, replaceLocationURL } from "unquery";
   import axios from "axios";
 
+  import Plugin from "./components/Plugin";
+
   export default {
     name: "App",
 
-    components: {},
+    components: {
+      Plugin,
+    },
 
     data: () => ({
       search: "",
       page: 1,
       /** @type {import('./assets/types').WordpressPlugin[]} */
       plugins: [],
-      pages: 0
+      pages: 0,
     }),
 
     methods: {
@@ -72,12 +88,18 @@
         this.getPlugins(this.search, this.page);
       },
       /**
-       * @param search {String}
-       * @param page {Number}
+       * @param {String} search
+       * @param {Number} page
        */
       async getPlugins(search, page) {
         /** @type {import('./assets/types').ApiResponse} */
-        let response = (await axios.get(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request%5Bpage%5D=${page}&request%5Bsearch%5D=${encodeURI(search || "")}`)).data;
+        let response = (
+          await axios.get(
+            `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request%5Bpage%5D=${page}&request%5Bsearch%5D=${encodeURI(
+              search || ""
+            )}`
+          )
+        ).data;
         this.pages = response.info.pages;
         this.plugins = response.plugins;
       },

@@ -5,7 +5,7 @@ export interface ApiResponse {
     results: number;
   };
   plugins: WordpressPlugin[];
-};
+}
 
 export interface WordpressPlugin {
   active_installs: number;
@@ -20,6 +20,7 @@ export interface WordpressPlugin {
   icons: {
     "1x": string;
     "2x"?: string;
+    svg?: string;
   };
   last_updated: string;
   name: string;
@@ -41,4 +42,4 @@ export interface WordpressPlugin {
   tags: Object;
   tested: string;
   version: string;
-};
+}
