@@ -69,7 +69,7 @@
 </template>
 
 <script>
-  import { Html5Entities } from "html-entities/lib/html5-entities";
+  import { decode } from "html-entities";
   import commaNumber from "comma-number";
 
   import Stars from "./Stars";
@@ -94,7 +94,7 @@
 
     methods: {
       decode(html) {
-        return Html5Entities.decode(html);
+        return decode(html);
       },
       commaNumber(num) {
         return commaNumber(num);
@@ -108,6 +108,10 @@
   .v-list-item__content {
     align-self: baseline;
     margin-left: 16px;
+
+    a {
+      text-decoration: none;
+    }
 
     .v-subheader {
       padding: 0;
