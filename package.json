@@ -6,7 +6,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "preinstall": "npx npm-force-resolutions",
     "postinstall": "check-audit"
   },
   "dependencies": {
@@ -44,8 +43,5 @@
     "last 2 firefox versions",
     "not dead",
     "safari 13.1"
-  ],
-  "resolutions": {
-    "axios": "0.21.1"
-  }
+  ]
 }
