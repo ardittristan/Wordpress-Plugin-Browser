@@ -14,7 +14,6 @@
     "comma-number": "^2.1.0",
     "core-js": "^3.13.1",
     "html-entities": "^2.3.2",
-    "simple-github-gist-api": "^1.0.1",
     "store": "^2.0.12",
     "unquery": "^0.4.3",
     "vue": "^2.6.12",
@@ -23,6 +22,7 @@
     "vuetify-dialog": "^2.0.14"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.14.2",
     "@vue/cli-plugin-babel": "~4.5.13",
     "@vue/cli-plugin-eslint": "~4.5.13",
     "@vue/cli-service": "~4.5.13",

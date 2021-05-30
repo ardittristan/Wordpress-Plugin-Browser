@@ -24,7 +24,7 @@
       <v-spacer />
       <v-btn
         icon
-        @click="onUpload"
+        @click="onUpload()"
       >
         <v-icon>
           mdi-upload
@@ -32,7 +32,7 @@
       </v-btn>
       <v-btn
         icon
-        @click="onDownload"
+        @click="onDownload()"
       >
         <v-icon>
           mdi-download
@@ -67,6 +67,21 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-snackbar v-model="gistIdSnackbar">
+        <v-alert type="error">
+          Gist Id Missing!
+        </v-alert>
+      </v-snackbar>
+      <v-snackbar v-model="githubKeySnackbar">
+        <v-alert type="error">
+          Github Authentication Key Missing!
+        </v-alert>
+      </v-snackbar>
+      <v-snackbar v-model="notifySnackbar">
+        <v-alert type="success">
+          {{ notifyMessage }}
+        </v-alert>
+      </v-snackbar>
     </v-main>
 
     <v-footer app>
@@ -85,6 +100,7 @@
   import { Unquery, replaceLocationURL } from "unquery";
   import axios from "axios";
   import store from "./plugins/store";
+  import Gist from "./plugins/gist";
 
   import Plugin from "./components/Plugin";
   import GistSettings from "./components/GistSettings";
@@ -103,6 +119,10 @@
       plugins: [],
       pages: 0,
       favorites: {},
+      gistIdSnackbar: false,
+      githubKeySnackbar: false,
+      notifySnackbar: false,
+      notifyMessage: "",
     }),
 
     methods: {
@@ -151,8 +171,34 @@
       onSettings() {
         this.$dialog.show(GistSettings);
       },
-      onUpload() {},
-      onDownload() {},
+      async onUpload(notify = true) {
+        const res = await Gist.upload();
+        if (res === "keyMissing") {
+          this.githubKeySnackbar = true;
+          return;
+        } else if (res === "idMissing") {
+          this.gistIdSnackbar = true;
+          return;
+        }
+        if (notify) {
+          this.notifyMessage = "Upload successful!";
+          this.notifySnackbar = true;
+        }
+      },
+      async onDownload(notify = true) {
+        const res = await Gist.download();
+        if (res === "keyMissing") {
+          this.githubKeySnackbar = true;
+          return;
+        } else if (res === "idMissing") {
+          this.gistIdSnackbar = true;
+          return;
+        }
+        if (notify) {
+          this.notifyMessage = "Download successful!";
+          this.notifySnackbar = true;
+        }
+      },
     },
 
     mounted() {
@@ -178,5 +224,16 @@
 <style lang="scss" scoped>
 .v-footer .container {
   padding: 0;
+}
+
+.v-snack::v-deep {
+  .v-snack__content {
+    padding: 0;
+    min-width: 100%;
+
+    .v-alert {
+      margin-bottom: 0;
+    }
+  }
 }
 </style>
