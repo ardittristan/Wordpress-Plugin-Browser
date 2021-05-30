@@ -12,7 +12,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "comma-number": "^2.1.0",
-    "core-js": "^3.13.0",
+    "core-js": "^3.13.1",
     "html-entities": "^2.3.2",
     "simple-github-gist-api": "^1.0.1",
     "store": "^2.0.12",
@@ -40,9 +40,10 @@
     "vuetify-loader": "^1.7.2"
   },
   "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
+    "last 2 chrome versions",
+    "last 2 firefox versions",
+    "not dead",
+    "safari 13.1"
   ],
   "resolutions": {
     "axios": "0.21.1"
