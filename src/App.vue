@@ -22,6 +22,30 @@
         </template>
       </v-text-field>
       <v-spacer />
+      <v-btn
+        icon
+        @click="onUpload"
+      >
+        <v-icon>
+          mdi-upload
+        </v-icon>
+      </v-btn>
+      <v-btn
+        icon
+        @click="onDownload"
+      >
+        <v-icon>
+          mdi-download
+        </v-icon>
+      </v-btn>
+      <v-btn
+        icon
+        @click="onSettings"
+      >
+        <v-icon>
+          mdi-cog
+        </v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-main>
@@ -36,14 +60,23 @@
             md="6"
             sm="12"
           >
-            <plugin :plugin="plugin" />
+            <plugin
+              :plugin="plugin"
+              :favorites="favorites"
+            />
           </v-col>
         </v-row>
       </v-container>
     </v-main>
 
     <v-footer app>
-      pagenav
+      <v-container>
+        <v-pagination
+          v-model="page"
+          :length="pages"
+          @input="onPagination"
+        />
+      </v-container>
     </v-footer>
   </v-app>
 </template>
@@ -51,8 +84,10 @@
 <script>
   import { Unquery, replaceLocationURL } from "unquery";
   import axios from "axios";
+  import store from "./plugins/store";
 
   import Plugin from "./components/Plugin";
+  import GistSettings from "./components/GistSettings";
 
   export default {
     name: "App",
@@ -67,25 +102,30 @@
       /** @type {import('./assets/types').WordpressPlugin[]} */
       plugins: [],
       pages: 0,
+      favorites: {},
     }),
 
     methods: {
       onTyping() {
         clearTimeout(this.timeout);
-        var self = this;
+        const that = this;
         this.timeout = setTimeout(function () {
-          self.searchFunction();
+          that.setSearchParam(that.search, 1);
+          that.getPlugins(that.search, 1);
         }, 250);
       },
-      searchFunction() {
+      /**
+       * @param {String} search
+       * @param {Number} page
+       */
+      setSearchParam(search, page) {
         let searchParam = Unquery(window.location.search, {
           search: Unquery.string(),
           page: Unquery.number(),
         });
-        searchParam.search = this.search;
-        searchParam.page = 1;
+        searchParam.search = search;
+        searchParam.page = page;
         replaceLocationURL(searchParam);
-        this.getPlugins(this.search, this.page);
       },
       /**
        * @param {String} search
@@ -100,12 +140,28 @@
             )}`
           )
         ).data;
-        this.pages = response.info.pages;
+        this.pages = response.info.pages > 999 ? 999 : response.info.pages;
         this.plugins = response.plugins;
       },
+      /** @param {Number} page */
+      onPagination(page) {
+        this.setSearchParam(this.search, page);
+        this.getPlugins(this.search, page);
+      },
+      onSettings() {
+        this.$dialog.show(GistSettings);
+      },
+      onUpload() {},
+      onDownload() {},
     },
 
     mounted() {
+      store.defaults({ WPFavorites: [] });
+
+      store.get("WPFavorites").forEach((favorite) => {
+        this.favorites[favorite] = true;
+      });
+
       let searchParam = Unquery(window.location.search, {
         search: Unquery.string(),
         page: Unquery.number(),
@@ -118,3 +174,9 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+.v-footer .container {
+  padding: 0;
+}
+</style>

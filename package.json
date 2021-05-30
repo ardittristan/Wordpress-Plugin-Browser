@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "preinstall": "npx npm-force-resolutions",
     "postinstall": "check-audit"
   },
   "dependencies": {
@@ -13,10 +14,13 @@
     "comma-number": "^2.1.0",
     "core-js": "^3.13.0",
     "html-entities": "^2.3.2",
+    "simple-github-gist-api": "^1.0.1",
+    "store": "^2.0.12",
     "unquery": "^0.4.3",
     "vue": "^2.6.12",
     "vue-snip": "^1.2.0",
-    "vuetify": "^2.5.1"
+    "vuetify": "^2.5.1",
+    "vuetify-dialog": "^2.0.14"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.13",
@@ -39,5 +43,8 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "resolutions": {
+    "axios": "0.21.1"
+  }
 }

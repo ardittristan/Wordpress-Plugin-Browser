@@ -15,7 +15,13 @@
     <v-icon dense>
       {{ getStar(rating, 95, 85) }}
     </v-icon>
-    <v-subheader>
+    <v-subheader v-if="slug">
+      (<a
+        :href="`https://wordpress.org/support/plugin/${slug}/reviews/`"
+        target="_blank"
+      >{{reviews}}</a>)
+    </v-subheader>
+    <v-subheader v-else>
       ({{reviews}})
     </v-subheader>
   </div>
@@ -31,6 +37,10 @@
       reviews: {
         type: Number,
         default: 0,
+      },
+      slug: {
+        type: String,
+        required: false,
       },
     },
 
@@ -58,6 +68,11 @@
     padding: 0 4px;
     font-size: 0.8rem;
     height: unset;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
   }
 
   .mdi-star {

@@ -2,7 +2,7 @@
   <v-card class="mx-auto plugin-card">
     <v-list-item>
       <a
-        :href="pluginUrl"
+        :href="`https://wordpress.org/plugins/${this.plugin.slug}/`"
         target="_blank"
         class="avatar-wrapper"
       >
@@ -10,15 +10,13 @@
           tile
           size="120"
         >
-
-          <v-img :src="plugin.icons['1x']" />
-
+          <v-img :src="plugin.icons['1x'] || plugin.icons['2x'] || plugin.icons['svg'] || plugin.icons['default']" />
         </v-list-item-avatar>
       </a>
       <v-list-item-content>
         <v-container style="padding: 4px;">
           <a
-            :href="pluginUrl"
+            :href="`https://wordpress.org/plugins/${this.plugin.slug}/`"
             target="_blank"
           >
             <v-list-item-title :title="decode(plugin.name)">
@@ -28,6 +26,7 @@
           <Stars
             :rating="plugin.rating"
             :reviews="plugin.num_ratings"
+            :slug="plugin.slug"
           />
           <v-subheader v-snip="3">
             {{ decode(plugin.short_description) }}
@@ -64,6 +63,30 @@
           Tested with {{ plugin.tested }}
         </span>
       </div>
+      <div>
+        <v-btn
+          icon
+          outlined
+          color="primary"
+          v-if="isFavorite"
+          @click="removeFavorite"
+        >
+          <v-icon color="red">
+            mdi-heart
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          outlined
+          color="primary"
+          v-else
+          @click="addFavorite"
+        >
+          <v-icon>
+            mdi-heart-outline
+          </v-icon>
+        </v-btn>
+      </div>
     </v-card-actions>
   </v-card>
 </template>
@@ -71,6 +94,7 @@
 <script>
   import { decode } from "html-entities";
   import commaNumber from "comma-number";
+  import store from "../plugins/store";
 
   import Stars from "./Stars";
 
@@ -79,16 +103,18 @@
       Stars,
     },
 
+    data: () => ({
+      isFavorite: false,
+    }),
+
     props: {
       plugin: {
         type: Object,
         required: true,
       },
-    },
-
-    computed: {
-      pluginUrl() {
-        return `https://wordpress.org/plugins/${this.plugin.slug}` || "";
+      favorites: {
+        type: Object,
+        required: true,
       },
     },
 
@@ -99,6 +125,20 @@
       commaNumber(num) {
         return commaNumber(num);
       },
+      addFavorite() {
+        this.favorites[this.plugin.slug] = true;
+        this.isFavorite = true;
+        store.set("WPFavorites", Object.keys(this.favorites));
+      },
+      removeFavorite() {
+        delete this.favorites[this.plugin.slug];
+        this.isFavorite = false;
+        store.set("WPFavorites", Object.keys(this.favorites));
+      },
+    },
+
+    mounted() {
+      if (this.favorites[this.plugin.slug]) this.isFavorite = true;
     },
   };
 </script>
@@ -126,13 +166,18 @@
   .v-card__actions {
     display: grid;
     grid-template:
-      "top top"
-      / auto 1fr;
-    grid-column-gap: 1.8em;
+      "top top fav"
+      ". . fav" / auto 1fr auto;
+    grid-column-gap: 1em;
     border-top: solid 2px #121212;
 
-    & > div:first-of-type {
-      grid-area: top;
+    & > div {
+      &:first-of-type {
+        grid-area: top;
+      }
+      &:last-of-type {
+        grid-area: fav;
+      }
     }
 
     .card-sub-text::v-deep {
