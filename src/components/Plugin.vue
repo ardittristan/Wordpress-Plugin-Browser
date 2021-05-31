@@ -124,11 +124,13 @@
       this.favorites[this.plugin.slug] = true;
       this.isFavorite = true;
       store.set("WPFavorites", Object.keys(this.favorites));
+      this.$emit("callAutoUpload");
     }
     removeFavorite() {
       delete this.favorites[this.plugin.slug];
       this.isFavorite = false;
       store.set("WPFavorites", Object.keys(this.favorites));
+      this.$emit("callAutoUpload");
     }
 
     mounted() {

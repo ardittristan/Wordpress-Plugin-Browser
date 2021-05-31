@@ -4,6 +4,7 @@ import vuetify from "./plugins/vuetify";
 import "./plugins/vue-snip";
 import "./plugins/vuetify-dialog";
 import "./plugins/vuetify-decorators";
+import "./plugins/vue-toggles";
 
 Vue.config.productionTip = false;
 
