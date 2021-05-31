@@ -1,14 +1,11 @@
 import Vue from "vue";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
-import VueSnip from "vue-snip";
+import "./plugins/vue-snip";
 import "./plugins/vuetify-dialog";
-import DialogLayout from "./components/GistSettingsLayout.vue";
+import "./plugins/vuetify-decorators";
 
 Vue.config.productionTip = false;
-Vue.use(VueSnip);
-
-Vue.prototype.$dialog.layout("gist", DialogLayout);
 
 new Vue({
   vuetify,

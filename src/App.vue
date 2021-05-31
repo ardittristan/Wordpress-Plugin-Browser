@@ -22,30 +22,51 @@
         </template>
       </v-text-field>
       <v-spacer />
-      <v-btn
-        icon
-        @click="onUpload()"
-      >
-        <v-icon>
-          mdi-upload
-        </v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click="onDownload()"
-      >
-        <v-icon>
-          mdi-download
-        </v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click="onSettings"
-      >
-        <v-icon>
-          mdi-cog
-        </v-icon>
-      </v-btn>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            @click="onUpload()"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>
+              mdi-upload
+            </v-icon>
+          </v-btn>
+        </template>
+        <span>Upload Favorites to Gist</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            @click="onDownload()"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>
+              mdi-download
+            </v-icon>
+          </v-btn>
+        </template>
+        <span>Download Favorites from Gist</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            @click="onSettings"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>
+              mdi-cog
+            </v-icon>
+          </v-btn>
+        </template>
+        <span>Gist Settings</span>
+      </v-tooltip>
     </v-app-bar>
 
     <v-main>
@@ -97,109 +118,113 @@
 </template>
 
 <script>
+  import { Vue, Component } from "vue-property-decorator";
   import { Unquery, replaceLocationURL } from "unquery";
   import axios from "axios";
   import store from "./plugins/store";
   import Gist from "./plugins/gist";
+  import { VDLoader } from "vuetify-decorators";
 
   import Plugin from "./components/Plugin";
   import GistSettings from "./components/GistSettings";
 
-  export default {
+  @Component({
     name: "App",
 
     components: {
       Plugin,
     },
+  })
+  class App extends Vue {
+    data() {
+      return {
+        search: "",
+        page: 1,
+        /** @type {import('./assets/types').WordpressPlugin[]} */
+        plugins: [],
+        pages: 0,
+        favorites: {},
+        gistIdSnackbar: false,
+        githubKeySnackbar: false,
+        notifySnackbar: false,
+        notifyMessage: "",
+      };
+    }
 
-    data: () => ({
-      search: "",
-      page: 1,
-      /** @type {import('./assets/types').WordpressPlugin[]} */
-      plugins: [],
-      pages: 0,
-      favorites: {},
-      gistIdSnackbar: false,
-      githubKeySnackbar: false,
-      notifySnackbar: false,
-      notifyMessage: "",
-    }),
-
-    methods: {
-      onTyping() {
-        clearTimeout(this.timeout);
-        const that = this;
-        this.timeout = setTimeout(function () {
-          that.setSearchParam(that.search, 1);
-          that.getPlugins(that.search, 1);
-        }, 250);
-      },
-      /**
-       * @param {String} search
-       * @param {Number} page
-       */
-      setSearchParam(search, page) {
-        let searchParam = Unquery(window.location.search, {
-          search: Unquery.string(),
-          page: Unquery.number(),
-        });
-        searchParam.search = search;
-        searchParam.page = page;
-        replaceLocationURL(searchParam);
-      },
-      /**
-       * @param {String} search
-       * @param {Number} page
-       */
-      async getPlugins(search, page) {
-        /** @type {import('./assets/types').ApiResponse} */
-        let response = (
-          await axios.get(
-            `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request%5Bpage%5D=${page}&request%5Bsearch%5D=${encodeURI(
-              search || ""
-            )}`
-          )
-        ).data;
-        this.pages = response.info.pages > 999 ? 999 : response.info.pages;
-        this.plugins = response.plugins;
-      },
-      /** @param {Number} page */
-      onPagination(page) {
-        this.setSearchParam(this.search, page);
-        this.getPlugins(this.search, page);
-      },
-      onSettings() {
-        this.$dialog.show(GistSettings);
-      },
-      async onUpload(notify = true) {
-        const res = await Gist.upload();
-        if (res === "keyMissing") {
-          this.githubKeySnackbar = true;
-          return;
-        } else if (res === "idMissing") {
-          this.gistIdSnackbar = true;
-          return;
-        }
-        if (notify) {
-          this.notifyMessage = "Upload successful!";
-          this.notifySnackbar = true;
-        }
-      },
-      async onDownload(notify = true) {
-        const res = await Gist.download();
-        if (res === "keyMissing") {
-          this.githubKeySnackbar = true;
-          return;
-        } else if (res === "idMissing") {
-          this.gistIdSnackbar = true;
-          return;
-        }
-        if (notify) {
-          this.notifyMessage = "Download successful!";
-          this.notifySnackbar = true;
-        }
-      },
-    },
+    onTyping() {
+      clearTimeout(this.timeout);
+      const that = this;
+      this.timeout = setTimeout(function () {
+        that.setSearchParam(that.search, 1);
+        that.getPlugins(that.search, 1);
+      }, 250);
+    }
+    /**
+     * @param {String} search
+     * @param {Number} page
+     */
+    setSearchParam(search, page) {
+      let searchParam = Unquery(window.location.search, {
+        search: Unquery.string(),
+        page: Unquery.number(),
+      });
+      searchParam.search = search;
+      searchParam.page = page;
+      replaceLocationURL(searchParam);
+    }
+    /**
+     * @param {String} search
+     * @param {Number} page
+     */
+    @VDLoader({ overlayOptions: { "z-index": 4 } })
+    async getPlugins(search, page) {
+      /** @type {import('./assets/types').ApiResponse} */
+      let response = (
+        await axios.get(
+          `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request%5Bpage%5D=${page}&request%5Bsearch%5D=${encodeURI(
+            search || ""
+          )}`
+        )
+      ).data;
+      this.pages = response.info.pages > 999 ? 999 : response.info.pages;
+      this.plugins = response.plugins;
+    }
+    /** @param {Number} page */
+    onPagination(page) {
+      this.setSearchParam(this.search, page);
+      this.getPlugins(this.search, page);
+    }
+    onSettings() {
+      this.$dialog.show(GistSettings);
+    }
+    async onUpload(notify = true) {
+      const res = await Gist.upload();
+      if (res === "keyMissing") {
+        this.githubKeySnackbar = true;
+        return;
+      } else if (res === "idMissing") {
+        this.gistIdSnackbar = true;
+        return;
+      }
+      if (notify) {
+        this.notifyMessage = "Upload successful!";
+        this.notifySnackbar = true;
+      }
+    }
+    async onDownload(notify = true) {
+      const res = await Gist.download();
+      if (res === "keyMissing") {
+        this.githubKeySnackbar = true;
+        return;
+      } else if (res === "idMissing") {
+        this.gistIdSnackbar = true;
+        return;
+      }
+      if (notify) {
+        this.notifyMessage = "Download successful!";
+        this.notifySnackbar = true;
+      }
+    }
 
     mounted() {
       store.defaults({ WPFavorites: [] });
@@ -217,8 +242,9 @@
       if (searchParam.page) this.page = searchParam.page;
 
       this.getPlugins(this.search, this.page);
-    },
-  };
+    }
+  }
+  export default App;
 </script>
 
 <style lang="scss" scoped>

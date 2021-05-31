@@ -56,58 +56,59 @@
 </template>
 
 <script>
+  import { Vue, Component } from "vue-property-decorator";
   import store from "../plugins/store";
   import Gist from "../plugins/gist";
 
-  export default {
+  @Component({
     layout: "gist",
+  })
+  class GistSettings extends Vue {
+    data() {
+      return {
+        githubKey: "",
+        gistId: "",
+        tooltip: false,
+        showPass: false,
+      };
+    }
 
-    data: () => ({
-      githubKey: "",
-      gistId: "",
-      tooltip: false,
-      showPass: false,
-    }),
-
-    computed: {
-      actions() {
-        return {
-          cancel: {
-            text: "Cancel",
+    get actions() {
+      return {
+        cancel: {
+          text: "Cancel",
+        },
+        save: {
+          text: "Save",
+          handle: () => {
+            this.save();
           },
-          save: {
-            text: "Save",
-            handle: () => {
-              this.save();
-            },
-          },
-        };
-      },
-    },
+        },
+      };
+    }
 
-    methods: {
-      save() {
-        store.set("githubKey", this.githubKey);
-        store.set("gistId", this.gistId);
-      },
-      async createGist() {
-        if (this.githubKey.length === 0) {
-          this.tooltip = true;
-          setTimeout(() => {
-            this.tooltip = false;
-          }, 5000);
-          return;
-        }
-        this.gistId = await Gist.create();
-      },
-    },
+    save() {
+      store.set("githubKey", this.githubKey);
+      store.set("gistId", this.gistId);
+    }
+    async createGist() {
+      if (this.githubKey.length === 0) {
+        this.tooltip = true;
+        setTimeout(() => {
+          this.tooltip = false;
+        }, 5000);
+        return;
+      }
+      this.gistId = await Gist.create();
+    }
 
     mounted() {
       store.defaults({ githubKey: "", gistId: "" });
       this.githubKey = store.get("githubKey");
       this.gistId = store.get("gistId");
-    },
-  };
+    }
+  }
+  export default GistSettings;
 </script>
 
 <style lang="scss" scoped>

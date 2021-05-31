@@ -28,35 +28,26 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      rating: {
-        type: Number,
-        default: 0,
-      },
-      reviews: {
-        type: Number,
-        default: 0,
-      },
-      slug: {
-        type: String,
-        required: false,
-      },
-    },
+  import { Vue, Component, Prop } from "vue-property-decorator";
 
-    methods: {
-      /**
-       * @param {Number} rating
-       * @param {Number} full
-       * @param {Number} half
-       */
-      getStar(rating, full, half) {
-        if (rating >= full) return "mdi-star";
-        if (rating >= half) return "mdi-star-half-full";
-        return "mdi-star-outline";
-      },
-    },
-  };
+  @Component()
+  class Stars extends Vue {
+    @Prop({ type: Number, default: 0 }) rating;
+    @Prop({ type: Number, default: 0 }) reviews;
+    @Prop({ type: String, required: false }) slug;
+
+    /**
+     * @param {Number} rating
+     * @param {Number} full
+     * @param {Number} half
+     */
+    getStar(rating, full, half) {
+      if (rating >= full) return "mdi-star";
+      if (rating >= half) return "mdi-star-half-full";
+      return "mdi-star-outline";
+    }
+  }
+  export default Stars;
 </script>
 
 <style lang="scss" scoped>

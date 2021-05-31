@@ -30,33 +30,28 @@
 </template>
 
 <script>
+  import { Vue, Component, Prop } from "vue-property-decorator";
   import { VDialog } from "vuetify/lib";
 
-  export default {
+  @Component({
     components: {
       VDialog,
     },
-    props: {
-      fullscreen: Boolean,
-      scrollable: Boolean,
-      hideOverlay: Boolean,
-      transition: {
-        type: [String, Boolean],
-        default: "dialog-transition",
-      },
-      showClose: {
-        type: Boolean,
-        default: () => true,
-      },
-    },
-    methods: {
-      _destroy() {
-        setTimeout(() => {
-          this.$destroy();
-        }, 1000);
-      },
-    },
-  };
+  })
+  class GistSettingsLayout extends Vue {
+    @Prop(Boolean) fullscreen;
+    @Prop(Boolean) scrollable;
+    @Prop(Boolean) hideOverlay;
+    @Prop({ type: [String, Boolean], default: "dialog-transition" }) transition;
+    @Prop({ type: Boolean, default: () => true }) showClose;
+
+    _destroy() {
+      setTimeout(() => {
+        this.$destroy();
+      }, 1000);
+    }
+  }
+  export default GistSettingsLayout;
 </script>
 
 <style lang="scss">

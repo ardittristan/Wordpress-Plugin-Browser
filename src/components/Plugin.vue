@@ -92,55 +92,50 @@
 </template>
 
 <script>
+  import { Vue, Component, Prop } from "vue-property-decorator";
   import { decode } from "html-entities";
   import commaNumber from "comma-number";
   import store from "../plugins/store";
 
   import Stars from "./Stars";
 
-  export default {
+  @Component({
     components: {
       Stars,
     },
+  })
+  class Plugin extends Vue {
+    @Prop({ type: Object, required: true }) plugin;
+    @Prop({ type: Object, required: true }) favorites;
 
-    data: () => ({
-      isFavorite: false,
-    }),
+    data() {
+      return {
+        isFavorite: false,
+      };
+    }
 
-    props: {
-      plugin: {
-        type: Object,
-        required: true,
-      },
-      favorites: {
-        type: Object,
-        required: true,
-      },
-    },
-
-    methods: {
-      decode(html) {
-        return decode(html);
-      },
-      commaNumber(num) {
-        return commaNumber(num);
-      },
-      addFavorite() {
-        this.favorites[this.plugin.slug] = true;
-        this.isFavorite = true;
-        store.set("WPFavorites", Object.keys(this.favorites));
-      },
-      removeFavorite() {
-        delete this.favorites[this.plugin.slug];
-        this.isFavorite = false;
-        store.set("WPFavorites", Object.keys(this.favorites));
-      },
-    },
+    decode(html) {
+      return decode(html);
+    }
+    commaNumber(num) {
+      return commaNumber(num);
+    }
+    addFavorite() {
+      this.favorites[this.plugin.slug] = true;
+      this.isFavorite = true;
+      store.set("WPFavorites", Object.keys(this.favorites));
+    }
+    removeFavorite() {
+      delete this.favorites[this.plugin.slug];
+      this.isFavorite = false;
+      store.set("WPFavorites", Object.keys(this.favorites));
+    }
 
     mounted() {
       if (this.favorites[this.plugin.slug]) this.isFavorite = true;
-    },
-  };
+    }
+  }
+  export default Plugin;
 </script>
 
 <style lang="scss" scoped>
