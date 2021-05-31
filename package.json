@@ -5,8 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "postinstall": "check-audit"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@mdi/font": "latest",
@@ -37,7 +36,6 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-vue": "^6.2.2",
     "eslint-plugin-vuetify": "^1.0.0-beta.8",
-    "npm-audit-resolver": "^3.0.0-0",
     "prettier": "^2.3.0",
     "sass": "~1.32.13",
     "sass-loader": "^10.2.0",
