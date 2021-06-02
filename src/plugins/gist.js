@@ -47,13 +47,13 @@ class Gist {
       return;
     }
     const res = await fetch("https://api.github.com/gists/" + this.gistId, { headers: { Authorization: "token " + this.githubKey } });
-    const content = (await res.json())?.files?.["settings.json"]?.content;
+    const content = JSON.parse((await res.json())?.files?.["settings.json"]?.content);
     if (checkOverwrite && content !== JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")])) return "overwrite";
     if (content) {
-      if (typeof content[0] === "string") store.set("WPFavorites", JSON.parse(content));
+      if (typeof content[0] === "string") store.set("WPFavorites", content);
       else {
-        store.set("WPFavorites", JSON.parse(content[0]));
-        store.set("WPMeh", JSON.parxe(content[1]));
+        store.set("WPFavorites", content[0]);
+        store.set("WPMeh", content[1]);
       }
     }
   }
