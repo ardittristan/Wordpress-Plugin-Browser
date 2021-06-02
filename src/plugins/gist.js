@@ -48,7 +48,7 @@ class Gist {
     }
     const res = await fetch("https://api.github.com/gists/" + this.gistId, { headers: { Authorization: "token " + this.githubKey } });
     const content = JSON.parse((await res.json())?.files?.["settings.json"]?.content);
-    if (checkOverwrite && content !== JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")])) return "overwrite";
+    if (checkOverwrite && JSON.stringify(content) !== JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")])) return "overwrite";
     if (content) {
       if (typeof content[0] === "string") store.set("WPFavorites", content);
       else {
