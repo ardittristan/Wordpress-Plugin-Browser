@@ -32,7 +32,7 @@ class Gist {
       body: JSON.stringify({
         files: {
           "settings.json": {
-            content: JSON.stringify(store.get("WPFavorites")),
+            content: JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")]),
           },
         },
       }),
@@ -48,8 +48,14 @@ class Gist {
     }
     const res = await fetch("https://api.github.com/gists/" + this.gistId, { headers: { Authorization: "token " + this.githubKey } });
     const content = (await res.json())?.files?.["settings.json"]?.content;
-    if (checkOverwrite && content !== JSON.stringify(store.get("WPFavorites"))) return "overwrite";
-    if (content) store.set("WPFavorites", JSON.parse(content));
+    if (checkOverwrite && content !== JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")])) return "overwrite";
+    if (content) {
+      if (typeof content[0] === "string") store.set("WPFavorites", JSON.parse(content));
+      else {
+        store.set("WPFavorites", JSON.parse(content[0]));
+        store.set("WPMeh", JSON.parxe(content[1]));
+      }
+    }
   }
 
   async create() {
@@ -59,7 +65,7 @@ class Gist {
         public: false,
         files: {
           "settings.json": {
-            content: JSON.stringify(store.get("WPFavorites")),
+            content: JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")]),
           },
         },
       }),

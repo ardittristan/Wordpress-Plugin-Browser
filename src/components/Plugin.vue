@@ -68,6 +68,30 @@
           icon
           outlined
           color="primary"
+          v-if="isMeh"
+          @click="removeMeh"
+        >
+          <v-icon color="red">
+            mdi-close-thick
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          outlined
+          color="primary"
+          v-else
+          @click="addMeh"
+        >
+          <v-icon>
+            mdi-close-outline
+          </v-icon>
+        </v-btn>
+      </div>
+      <div>
+        <v-btn
+          icon
+          outlined
+          color="primary"
           v-if="isFavorite"
           @click="removeFavorite"
         >
@@ -107,10 +131,12 @@
   class Plugin extends Vue {
     @Prop({ type: Object, required: true }) plugin;
     @Prop({ type: Object, required: true }) favorites;
+    @Prop({ type: Object, required: true }) meh;
 
     data() {
       return {
         isFavorite: false,
+        isMeh: false,
       };
     }
 
@@ -126,15 +152,28 @@
       store.set("WPFavorites", Object.keys(this.favorites));
       this.$emit("callAutoUpload");
     }
+    addMeh() {
+      this.meh[this.plugin.slug] = true;
+      this.isMeh = true;
+      store.set("WPMeh", Object.keys(this.meh));
+      this.$emit("callAutoUpload");
+    }
     removeFavorite() {
       delete this.favorites[this.plugin.slug];
       this.isFavorite = false;
       store.set("WPFavorites", Object.keys(this.favorites));
       this.$emit("callAutoUpload");
     }
+    removeMeh() {
+      delete this.meh[this.plugin.slug];
+      this.isMeh = false;
+      store.set("WPMeh", Object.keys(this.meh));
+      this.$emit("callAutoUpload");
+    }
 
     mounted() {
       if (this.favorites[this.plugin.slug]) this.isFavorite = true;
+      if (this.meh[this.plugin.slug]) this.isMeh = true;
     }
   }
   export default Plugin;
@@ -163,14 +202,18 @@
   .v-card__actions {
     display: grid;
     grid-template:
-      "top top fav"
-      ". . fav" / auto 1fr auto;
+      "top top meh fav"
+      ". . meh fav" / auto 1fr auto auto;
     grid-column-gap: 1em;
     border-top: solid 2px #121212;
 
     & > div {
       &:first-of-type {
         grid-area: top;
+      }
+      &:nth-last-of-type(2) {
+        grid-area: meh;
+        margin-right: -0.75em;
       }
       &:last-of-type {
         grid-area: fav;

@@ -108,6 +108,7 @@
             <plugin
               :plugin="plugin"
               :favorites="favorites"
+              :meh="meh"
               @callAutoUpload="onAutoUpload"
             />
           </v-col>
@@ -170,6 +171,7 @@
         plugins: [],
         pages: 0,
         favorites: {},
+        meh: {},
         gistIdSnackbar: false,
         githubKeySnackbar: false,
         notifySnackbar: false,
@@ -311,11 +313,15 @@
     }
 
     mounted() {
-      store.defaults({ WPFavorites: [] });
+      store.defaults({ WPFavorites: [], WPMeh: [] });
 
       store.get("WPFavorites").forEach((favorite) => {
         this.favorites[favorite] = true;
       });
+
+      store.get("WPMeh").forEach((meh) => {
+        this.meh[meh] = true;
+      })
 
       let searchParam = Unquery(window.location.search, {
         search: Unquery.string(),
