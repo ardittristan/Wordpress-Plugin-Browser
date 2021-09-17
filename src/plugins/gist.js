@@ -32,7 +32,7 @@ class Gist {
       body: JSON.stringify({
         files: {
           "settings.json": {
-            content: JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")]),
+            content: JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")], null, "\t"),
           },
         },
       }),
@@ -65,7 +65,7 @@ class Gist {
         public: false,
         files: {
           "settings.json": {
-            content: JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")]),
+            content: JSON.stringify([store.get("WPFavorites"), store.get("WPMeh")], null, "\t"),
           },
         },
       }),
